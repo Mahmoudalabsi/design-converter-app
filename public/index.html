@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أدوات التصاميم - تحويل ورندر</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #e2e8f0);
+      min-height: 100vh;
+      color: #1e293b;
+    }
+
+    /* Header */
+    .header {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #10b981, #0d9488);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 20px;
+    }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p { font-size: 13px; color: #64748b; }
+
+    /* Tabs */
+    .tabs {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .tab-buttons {
+      display: flex;
+      gap: 4px;
+      max-width: 400px;
+      margin: 0 auto 32px;
+      background: #e2e8f0;
+      border-radius: 12px;
+      padding: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: #64748b;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: #1e293b;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .tab-btn:hover:not(.active) { color: #334155; }
+
+    /* Tab Content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* Card */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 20px 24px 0;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+    .card-body { padding: 0 24px 24px; }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-zone:hover { border-color: #10b981; background: #f0fdf4; }
+    .upload-zone.drag-over { border-color: #10b981; background: #ecfdf5; }
+    .upload-zone.has-file { border-color: #10b981; background: #f0fdf4; border-style: solid; }
+    .upload-icon { font-size: 48px; margin-bottom: 12px; }
+    .upload-text { font-size: 15px; font-weight: 600; color: #475569; }
+    .upload-sub { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+    .file-info { font-size: 14px; color: #10b981; font-weight: 600; }
+
+    /* Input */
+    .input-group { margin-top: 16px; }
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .input-group input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .input-group input[type="text"]:focus { border-color: #10b981; }
+    .input-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+    /* Button */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-green { background: #059669; color: #fff; }
+    .btn-green:hover:not(:disabled) { background: #047857; }
+    .btn-teal { background: #0d9488; color: #fff; }
+    .btn-teal:hover:not(:disabled) { background: #0f766e; }
+    .btn-outline {
+      background: #fff;
+      color: #0d9488;
+      border: 2px solid #0d9488;
+    }
+    .btn-outline:hover:not(:disabled) { background: #f0fdfa; }
+
+    /* Progress */
+    .progress-bar {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    /* Result */
+    .result-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    .result-icon { font-size: 48px; margin-bottom: 8px; }
+    .result-name { font-size: 18px; font-weight: 700; color: #059669; }
+    .result-badge {
+      display: inline-block;
+      background: #d1fae5;
+      color: #065f46;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* File Tree */
+    .file-tree {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #64748b;
+      direction: ltr;
+      text-align: left;
+      margin-top: 16px;
+    }
+    .file-tree .dir { color: #475569; font-weight: 600; }
+
+    /* Error */
+    .error-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    .error-box .icon { font-size: 48px; margin-bottom: 8px; }
+    .error-box .msg { color: #dc2626; font-size: 14px; }
+
+    /* Empty State */
+    .empty-state {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      color: #94a3b8;
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 8px; }
+
+    /* Warnings */
+    .warnings-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    .warnings-box p { font-size: 12px; color: #b45309; }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #475569;
+      background: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    /* Preview */
+    .preview-box {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-height: 600px;
+      overflow: auto;
+    }
+    .preview-box img {
+      max-width: 100%;
+      max-height: 560px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Hidden */
+    .hidden { display: none !important; }
+
+    /* Formats badges */
+    .format-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 12px;
+    }
+    .format-badge {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* Render teal variant */
+    .upload-zone.teal:hover { border-color: #0d9488; background: #f0fdfa; }
+    .upload-zone.teal.drag-over { border-color: #0d9488; background: #f0fdfa; }
+    .upload-zone.teal.has-file { border-color: #0d9488; background: #f0fdfa; border-style: solid; }
+
+    /* Fonts list */
+    .font-list { margin-top: 12px; }
+    .font-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: #fff;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+    .font-format {
+      margin-right: auto;
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-icon">&#x1F3A8;</div>
+      <div>
+        <h1>أدوات التصاميم</h1>
+        <p>تحويل ورندر تصاميم Antigravity</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="tabs">
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="switchTab('convert')">&#x1F4E6; أداة التحويل</button>
+      <button class="tab-btn" onclick="switchTab('render')">&#x1F441; أداة الرندر</button>
+    </div>
+
+    <!-- Convert Tab -->
+    <div id="tab-convert" class="tab-content active">
+      <div class="grid">
+        <!-- Upload -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">&#x1F4E6; رفع ملف التصميم</div>
+            <div class="card-desc">ارفع ملف ZIP الخاص بالتصميم الأصلي</div>
+          </div>
+          <div class="card-body">
+            <div class="upload-zone" id="convert-drop" onclick="document.getElementById('convert-input').click()">
+              <input type="file" id="convert-input" accept=".zip" class="hidden" onchange="handleConvertFile(this)">
+              <div id="convert-upload-ui">
+                <div class="upload-icon">&#x1F4E4;</div>
+                <div class="upload-text">اسحب الملف هنا أو انقر للاختيار</div>
+                <div class="upload-sub">ملفات ZIP — يدعم جميع أنواع الصور والخطوط</div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label>اسم التصميم (اختياري)</label>
+              <input type="text" id="design-name" placeholder="أدخل اسم التصميم">
+              <div class="input-hint">سيتم استخدام هذا الاسم في: json/الاسم.json و skins/الاسم/</div>
+            </div>
+
+            <button class="btn btn-green" id="convert-btn" onclick="startConvert()" disabled>
+              &#x1F4E6; تحويل إلى هيكلية Export Pro
+            </button>
+            <div id="convert-progress" class="progress-bar hidden">
+              <div class="progress-fill" id="convert-progress-fill" style="width: 0%"></div>
+            </div>
+
+            <div class="format-badges">
+              <span class="format-badge">JPG</span><span class="format-badge">PNG</span>
+              <span class="format-badge">SVG</span><span class="format-badge">WebP</span>
+              <span class="format-badge">GIF</span><span class="format-badge">AVIF</span>
+              <span class="format-badge">BMP</span><span class="format-badge">TIFF</span>
+              <span class="format-badge">TTF</span><span class="format-badge">OTF</span>
+              <span class="format-badge">WOFF</span><span class="format-badge">WOFF2</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">&#x1F4E5; نتيجة التحويل</div>
+            <div class="card-desc">الملف المضغوط بهيكلية Export Pro جاهز للتنزيل</div>
+          </div>
+          <div class="card-body" id="convert-result">
+            <div class="empty-state">
+              <div class="icon">&#x1F5BC;</div>
+              <div>قم برفع ملف وتحويله لرؤية النتيجة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Render Tab -->
+    <div id="tab-render" class="tab-content">
+      <div class="grid">
+        <!-- Upload -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">&#x1F441; رندر التصميم</div>
+            <div class="card-desc">ارفع ملف ZIP بهيكلية Export Pro</div>
+          </div>
+          <div class="card-body">
+            <div class="upload-zone teal" id="render-drop" onclick="document.getElementById('render-input').click()">
+              <input type="file" id="render-input" accept=".zip" class="hidden" onchange="handleRenderFile(this)">
+              <div id="render-upload-ui">
+                <div class="upload-icon">&#x1F4E4;</div>
+                <div class="upload-text">اسحب الملف هنا أو انقر للاختيار</div>
+                <div class="upload-sub">ملفات ZIP بهيكلية Export Pro</div>
+              </div>
+            </div>
+
+            <button class="btn btn-teal" id="render-btn" onclick="startRender()" disabled>
+              &#x1F441; رندر التصميم
+            </button>
+            <div id="render-progress" class="progress-bar hidden">
+              <div class="progress-fill" id="render-progress-fill" style="width: 0%"></div>
+            </div>
+
+            <div id="render-info" class="hidden"></div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">&#x1F5BC; معاينة الرندر</div>
+            <div class="card-desc">النتيجة النهائية للتصميم</div>
+          </div>
+          <div class="card-body" id="render-result">
+            <canvas id="render-canvas" class="hidden"></canvas>
+            <div class="empty-state">
+              <div class="icon">&#x1F441;</div>
+              <div>ارفع ملف واضغط رندر لمعاينة التصميم</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ==================== State ====================
+let convertFile = null;
+let renderFile = null;
+let convertedBlob = null;
+let convertedFileName = '';
+
+// ==================== Tab Switching ====================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ==================== Drag & Drop ====================
+function setupDrop(zoneId, inputId, handler) {
+  const zone = document.getElementById(zoneId);
+  ['dragenter', 'dragover'].forEach(e => {
+    zone.addEventListener(e, (ev) => { ev.preventDefault(); zone.classList.add('drag-over'); });
+  });
+  ['dragleave', 'drop'].forEach(e => {
+    zone.addEventListener(e, (ev) => { ev.preventDefault(); zone.classList.remove('drag-over'); });
+  });
+  zone.addEventListener('drop', (ev) => {
+    const file = ev.dataTransfer.files[0];
+    if (file) handler(file);
+  });
+}
+
+setupDrop('convert-drop', 'convert-input', (file) => {
+  convertFile = file;
+  updateConvertUI();
+});
+setupDrop('render-drop', 'render-input', (file) => {
+  renderFile = file;
+  updateRenderUI();
+});
+
+function handleConvertFile(input) {
+  if (input.files[0]) {
+    convertFile = input.files[0];
+    updateConvertUI();
+  }
+}
+
+function handleRenderFile(input) {
+  if (input.files[0]) {
+    renderFile = input.files[0];
+    updateRenderUI();
+  }
+}
+
+function updateConvertUI() {
+  const zone = document.getElementById('convert-drop');
+  const ui = document.getElementById('convert-upload-ui');
+  const btn = document.getElementById('convert-btn');
+  if (convertFile) {
+    zone.classList.add('has-file');
+    ui.innerHTML = '<div class="upload-icon">&#x2705;</div>' +
+      '<div class="file-info">' + convertFile.name + '</div>' +
+      '<div class="upload-sub">' + (convertFile.size / 1024 / 1024).toFixed(2) + ' MB</div>';
+    btn.disabled = false;
+    if (!document.getElementById('design-name').value) {
+      document.getElementById('design-name').value = convertFile.name.replace(/\.zip$/i, '');
+    }
+  }
+}
+
+function updateRenderUI() {
+  const zone = document.getElementById('render-drop');
+  const ui = document.getElementById('render-upload-ui');
+  const btn = document.getElementById('render-btn');
+  if (renderFile) {
+    zone.classList.add('has-file');
+    ui.innerHTML = '<div class="upload-icon">&#x2705;</div>' +
+      '<div class="file-info">' + renderFile.name + '</div>' +
+      '<div class="upload-sub">' + (renderFile.size / 1024 / 1024).toFixed(2) + ' MB</div>';
+    btn.disabled = false;
+  }
+}
+
+// ==================== Convert ====================
+async function startConvert() {
+  if (!convertFile) return;
+  const btn = document.getElementById('convert-btn');
+  const progressBar = document.getElementById('convert-progress');
+  const progressFill = document.getElementById('convert-progress-fill');
+  const resultDiv = document.getElementById('convert-result');
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> جاري التحويل...';
+  progressBar.classList.remove('hidden');
+  progressFill.style.width = '20%';
+
+  try {
+    const formData = new FormData();
+    formData.append('file', convertFile);
+    const designName = document.getElementById('design-name').value.trim();
+    if (designName) formData.append('designName', designName);
+
+    progressFill.style.width = '40%';
+
+    const response = await fetch('/api/convert', {
+      method: 'POST',
+      body: formData,
+    });
+
+    progressFill.style.width = '70%';
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'فشل التحويل');
+    }
+
+    const templateName = response.headers.get('X-Template-Name') || 'Exported_Design';
+    const layersCount = response.headers.get('X-Layers-Count') || '0';
+    let warnings = [];
+    try { warnings = JSON.parse(response.headers.get('X-Warnings') || '[]'); } catch(e) {}
+
+    const blob = await response.blob();
+    convertedBlob = blob;
+    convertedFileName = templateName + '.zip';
+
+    progressFill.style.width = '100%';
+
+    const downloadUrl = URL.createObjectURL(blob);
+
+    let warningsHTML = '';
+    if (warnings.length > 0) {
+      warningsHTML = '<div class="warnings-box"><p>&#x26A0; تحذيرات (' + warnings.length + ')</p>';
+      warnings.slice(0, 5).forEach(w => { warningsHTML += '<p>' + w + '</p>'; });
+      if (warnings.length > 5) warningsHTML += '<p>+' + (warnings.length - 5) + ' تحذيرات أخرى</p>';
+      warningsHTML += '</div>';
+    }
+
+    resultDiv.innerHTML =
+      '<div class="result-box">' +
+        '<div class="result-icon">&#x2705;</div>' +
+        '<div class="result-name">' + templateName + '</div>' +
+        '<div class="result-badge">' + layersCount + ' طبقة</div>' +
+      '</div>' +
+      warningsHTML +
+      '<div class="file-tree">' +
+        '<div class="dir">&#x1F4C1; ' + templateName + '.zip</div>' +
+        '<div>&nbsp;&nbsp;&#x1F4C4; json/' + templateName + '.json</div>' +
+        '<div>&nbsp;&nbsp;&#x1F4C1; skins/' + templateName + '/</div>' +
+        '<div>&nbsp;&nbsp;&nbsp;&nbsp;baseBackground.png</div>' +
+        '<div>&nbsp;&nbsp;&nbsp;&nbsp;backgroundImage.png</div>' +
+        '<div>&nbsp;&nbsp;&nbsp;&nbsp;... (صور الطبقات)</div>' +
+        '<div>&nbsp;&nbsp;&#x1F4C1; fonts/</div>' +
+        '<div>&nbsp;&nbsp;&nbsp;&nbsp;... (TTF, OTF, WOFF)</div>' +
+      '</div>' +
+      '<button class="btn btn-green" onclick="downloadFile(\'' + downloadUrl + '\', \'' + templateName + '.zip\')">' +
+        '&#x1F4E5; تنزيل الملف المضغوط' +
+      '</button>' +
+      '<button class="btn btn-outline" style="margin-top:8px" onclick="renderConverted()">' +
+        '&#x1F441; رندر التصميم مباشرة' +
+      '</button>';
+
+  } catch (error) {
+    resultDiv.innerHTML =
+      '<div class="error-box">' +
+        '<div class="icon">&#x274C;</div>' +
+        '<div class="msg">' + error.message + '</div>' +
+      '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '&#x1F4E6; تحويل إلى هيكلية Export Pro';
+    setTimeout(() => { progressBar.classList.add('hidden'); progressFill.style.width = '0%'; }, 1000);
+  }
+}
+
+function downloadFile(url, filename) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+}
+
+function renderConverted() {
+  if (!convertedBlob) return;
+  renderFile = new File([convertedBlob], convertedFileName, { type: 'application/zip' });
+  updateRenderUI();
+  // Switch to render tab
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-render').classList.add('active');
+  document.querySelectorAll('.tab-btn')[1].classList.add('active');
+}
+
+// ==================== Render ====================
+async function startRender() {
+  if (!renderFile) return;
+  const btn = document.getElementById('render-btn');
+  const progressBar = document.getElementById('render-progress');
+  const progressFill = document.getElementById('render-progress-fill');
+  const resultDiv = document.getElementById('render-result');
+  const infoDiv = document.getElementById('render-info');
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> جاري الرندر...';
+  progressBar.classList.remove('hidden');
+  progressFill.style.width = '20%';
+
+  try {
+    const formData = new FormData();
+    formData.append('file', renderFile);
+
+    progressFill.style.width = '30%';
+
+    const response = await fetch('/api/render', {
+      method: 'POST',
+      body: formData,
+    });
+
+    progressFill.style.width = '50%';
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'فشل الرندر');
+    }
+
+    const data = await response.json();
+    progressFill.style.width = '60%';
+
+    // Render on canvas
+    const canvas = document.getElementById('render-canvas');
+    canvas.width = data.canvasWidth;
+    canvas.height = data.canvasHeight;
+    const ctx = canvas.getContext('2d');
+
+    // Load fonts
+    const loadedFonts = new Set();
+    if (data.fonts && data.fonts.length > 0) {
+      await Promise.all(data.fonts.map(async (font) => {
+        if (loadedFonts.has(font.name)) return;
+        const fontDataUrl = data.fontResources[font.path];
+        if (fontDataUrl) {
+          try {
+            const fontFace = new FontFace(font.name, 'url(' + fontDataUrl + ')', {});
+            await fontFace.load();
+            document.fonts.add(fontFace);
+            loadedFonts.add(font.name);
+          } catch (e) {
+            console.warn('Failed to load font:', font.name, e);
+          }
+        }
+      }));
+    }
+
+    // Draw images
+    if (data.imageLayers) {
+      for (const layer of data.imageLayers) {
+        const imageUrl = '/api/render-image/' + data.sessionId + '/' + layer.imageFile;
+        try {
+          await new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+              ctx.save();
+              if (layer.opacity !== undefined && layer.opacity < 1) {
+                ctx.globalAlpha = layer.opacity;
+              }
+              if (layer.rotation) {
+                const cx = layer.x + layer.width / 2;
+                const cy = layer.y + layer.height / 2;
+                ctx.translate(cx, cy);
+                ctx.rotate(layer.rotation * Math.PI / 180);
+                ctx.translate(-cx, -cy);
+              }
+              ctx.drawImage(img, layer.x, layer.y, layer.width, layer.height);
+              ctx.restore();
+              resolve();
+            };
+            img.onerror = () => { resolve(); };
+            img.src = imageUrl;
+          });
+        } catch (e) {
+          console.warn('Image render error:', layer.name, e);
+        }
+      }
+    }
+
+    // Draw text
+    if (data.textLayers) {
+      for (const layer of data.textLayers) {
+        renderTextLayer(ctx, layer, data);
+      }
+    }
+
+    progressFill.style.width = '90%';
+
+    // Generate preview image
+    const previewUrl = await new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(URL.createObjectURL(blob));
+        else resolve(canvas.toDataURL('image/png'));
+      }, 'image/png');
+    });
+
+    progressFill.style.width = '100%';
+
+    // Show info
+    const imageCount = (data.imageLayers || []).length;
+    const textCount = (data.textLayers || []).length;
+
+    let infoHTML = '<div class="info-grid">' +
+      '<div class="info-item">&#x1F3A8; ' + data.canvasWidth + ' x ' + data.canvasHeight + '</div>' +
+      '<div class="info-item">&#x1F4DA; ' + data.totalLayers + ' طبقة</div>' +
+      '<div class="info-item">&#x1F5BC; ' + imageCount + ' صورة</div>' +
+      '<div class="info-item">&#x270F; ' + textCount + ' نص</div>' +
+    '</div>';
+
+    if (data.fonts && data.fonts.length > 0) {
+      infoHTML += '<div class="font-list">';
+      infoHTML += '<div style="font-size:13px;font-weight:600;color:#475569;margin-bottom:6px">الخطوط (' + data.fonts.length + ')</div>';
+      data.fonts.forEach(f => {
+        infoHTML += '<div class="font-item">&#x270F; ' + f.name + ' <span class="font-format">' + f.format + '</span></div>';
+      });
+      infoHTML += '</div>';
+    }
+
+    if (data.warnings && data.warnings.length > 0) {
+      infoHTML += '<div class="warnings-box"><p>&#x26A0; تحذيرات (' + data.warnings.length + ')</p>';
+      data.warnings.slice(0, 3).forEach(w => { infoHTML += '<p>' + w + '</p>'; });
+      infoHTML += '</div>';
+    }
+
+    infoDiv.innerHTML = infoHTML;
+    infoDiv.classList.remove('hidden');
+
+    // Show preview
+    resultDiv.innerHTML = '<canvas id="render-canvas" class="hidden"></canvas>' +
+      '<div class="preview-box"><img src="' + previewUrl + '" alt="Rendered Design"></div>' +
+      '<button class="btn btn-teal" onclick="downloadRender(\'' + previewUrl + '\', \'' + data.templateName + '_render.png\')">' +
+        '&#x1F4E5; تنزيل الصورة (PNG)' +
+      '</button>';
+
+  } catch (error) {
+    resultDiv.innerHTML =
+      '<div class="error-box">' +
+        '<div class="icon">&#x274C;</div>' +
+        '<div class="msg">' + error.message + '</div>' +
+      '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '&#x1F441; رندر التصميم';
+    setTimeout(() => { progressBar.classList.add('hidden'); progressFill.style.width = '0%'; }, 1000);
+  }
+}
+
+function downloadRender(url, filename) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+}
+
+function renderTextLayer(ctx, layer, data) {
+  if (!layer.text) return;
+
+  ctx.save();
+
+  if (layer.opacity !== undefined && layer.opacity < 1) {
+    ctx.globalAlpha = layer.opacity;
+  }
+
+  let fontFamily = layer.font || 'Arial';
+  if (data.fonts) {
+    const matched = data.fonts.find(f => f.name === fontFamily || f.name.toLowerCase() === fontFamily.toLowerCase());
+    if (matched) fontFamily = matched.name;
+  }
+
+  let fontSize = parseInt(layer.size || '24');
+  const originalFontSize = fontSize;
+  const fontWeight = layer.weight === 'bold' ? 'bold' : 'normal';
+
+  const maxFontSize = Math.floor(layer.height * 0.85);
+  if (fontSize > maxFontSize && maxFontSize > 0) {
+    fontSize = maxFontSize;
+  }
+
+  ctx.font = fontWeight + ' ' + fontSize + 'px "' + fontFamily + '", Arial, sans-serif';
+
+  // Color
+  let color = '#ffffff';
+  if (layer.color) {
+    const cleaned = layer.color.trim();
+    if (cleaned.startsWith('0x') || cleaned.startsWith('0X')) {
+      color = '#' + cleaned.slice(2);
+    } else if (cleaned.startsWith('#')) {
+      color = cleaned;
+    }
+  }
+  ctx.fillStyle = color;
+
+  // Arabic check
+  const hasArabic = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(layer.text);
+
+  let textAlign = 'center';
+  if (layer.justification === 'left') textAlign = hasArabic ? 'right' : 'left';
+  else if (layer.justification === 'right') textAlign = hasArabic ? 'left' : 'right';
+
+  ctx.textAlign = textAlign;
+  ctx.textBaseline = 'middle';
+  ctx.direction = hasArabic ? 'rtl' : 'ltr';
+
+  if (layer.rotation) {
+    const cx = layer.x + layer.width / 2;
+    const cy = layer.y + layer.height / 2;
+    ctx.translate(cx, cy);
+    ctx.rotate(layer.rotation * Math.PI / 180);
+    ctx.translate(-cx, -cy);
+  }
+
+  const lines = layer.text.split('\n');
+  let lineHeight = parseInt(layer.lineHeight || layer.size || '24');
+  if (fontSize !== originalFontSize && originalFontSize > 0) {
+    lineHeight = Math.round(lineHeight * (fontSize / originalFontSize));
+  }
+
+  let textX = layer.x;
+  if (textAlign === 'center') textX = layer.x + layer.width / 2;
+  else if (textAlign === 'right') textX = layer.x + layer.width;
+
+  const metrics = ctx.measureText('Mg');
+  const actualAscent = metrics.actualBoundingBoxAscent || fontSize * 0.8;
+  const actualDescent = metrics.actualBoundingBoxDescent || fontSize * 0.2;
+  const lineHeightActual = actualAscent + actualDescent;
+
+  let startY;
+  if (lines.length === 1) {
+    startY = layer.y + layer.height / 2 - actualDescent / 2 + actualAscent / 2;
+  } else {
+    const totalTextHeight = lines.length * lineHeight;
+    startY = layer.y + (layer.height - totalTextHeight) / 2 + actualAscent + (lineHeight - lineHeightActual) / 2;
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    let lineText = lines[i];
+    if (layer.uppercase) lineText = lineText.toUpperCase();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(layer.x, layer.y, layer.width, layer.height);
+    ctx.clip();
+    ctx.fillText(lineText, textX, startY + i * lineHeight);
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+</script>
+
+</body>
+</html>
