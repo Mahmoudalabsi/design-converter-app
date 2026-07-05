@@ -47,7 +47,7 @@ app.post('/api/convert', upload.single('file'), async (req, res) => {
       (buffer[2] === 0x03 || buffer[2] === 0x05 || buffer[2] === 0x07);
 
     if (!isZip) {
-      return res.status(400).json({ error: 'الملف ليس ملف ANDALUSI صالح' });
+      return res.status(400).json({ error: 'الملف ليس ملف ZIP صالح' });
     }
 
     const uploadPath = path.join(tempDir, 'input.zip');

@@ -589,15 +589,15 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">&#x1F4E6; رفع ملف التصميم</div>
-            <div class="card-desc">ارفع ملف ANDALUSI الخاص بالتصميم الأصلي</div>
+            <div class="card-desc">ارفع ملف ZIP الخاص بالتصميم الأصلي</div>
           </div>
           <div class="card-body">
             <div class="upload-zone" id="convert-drop" onclick="document.getElementById('convert-input').click()">
-              <input type="file" id="convert-input" accept=".andalusi" class="hidden" onchange="handleConvertFile(this)">
+              <input type="file" id="convert-input" accept=".zip" class="hidden" onchange="handleConvertFile(this)">
               <div id="convert-upload-ui">
                 <div class="upload-icon">&#x1F4E4;</div>
                 <div class="upload-text">اسحب الملف هنا أو انقر للاختيار</div>
-                <div class="upload-sub">ملفات ANDALUSI — يدعم جميع أنواع الصور والخطوط</div>
+                <div class="upload-sub">ملفات ZIP — يدعم جميع أنواع الصور والخطوط</div>
               </div>
             </div>
 
@@ -615,7 +615,6 @@
             </div>
 
             <div class="format-badges">
-              <span class="format-badge">ANDALUSI</span><span class="format-badge">ZIP</span>
               <span class="format-badge">JPG</span><span class="format-badge">PNG</span>
               <span class="format-badge">SVG</span><span class="format-badge">WebP</span>
               <span class="format-badge">GIF</span><span class="format-badge">AVIF</span>
@@ -649,15 +648,15 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">&#x1F441; رندر التصميم</div>
-            <div class="card-desc">ارفع ملف ANDALUSI بهيكلية Export Pro</div>
+            <div class="card-desc">ارفع ملف ZIP بهيكلية Export Pro</div>
           </div>
           <div class="card-body">
             <div class="upload-zone teal" id="render-drop" onclick="document.getElementById('render-input').click()">
-              <input type="file" id="render-input" accept=".andalusi" class="hidden" onchange="handleRenderFile(this)">
+              <input type="file" id="render-input" accept=".zip" class="hidden" onchange="handleRenderFile(this)">
               <div id="render-upload-ui">
                 <div class="upload-icon">&#x1F4E4;</div>
                 <div class="upload-text">اسحب الملف هنا أو انقر للاختيار</div>
-                <div class="upload-sub">ملفات ANDALUSI بهيكلية Export Pro</div>
+                <div class="upload-sub">ملفات ZIP بهيكلية Export Pro</div>
               </div>
             </div>
 
@@ -754,7 +753,7 @@ function updateConvertUI() {
       '<div class="upload-sub">' + (convertFile.size / 1024 / 1024).toFixed(2) + ' MB</div>';
     btn.disabled = false;
     if (!document.getElementById('design-name').value) {
-      document.getElementById('design-name').value = convertFile.name.replace(/\.andalusi$/i, '');
+      document.getElementById('design-name').value = convertFile.name.replace(/\.zip$/i, '');
     }
   }
 }
