@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>استوديو التحويل - أدوات التصاميم</title>
+  <link rel="icon" type="image/png" href="assets/app-icon.png" />
+  <link rel="icon" sizes="16x16" href="assets/app-icon.png" />
+  <link rel="icon" sizes="32x32" href="assets/app-icon.png" />
+  <link rel="apple-touch-icon" href="assets/app-icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/app-icon.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/app-icon.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="assets/app-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -80,6 +87,14 @@
       color: #fff; font-size: 22px;
       box-shadow: 0 6px 20px rgba(201, 168, 76, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
       flex-shrink: 0;
+    }
+    .header-logo {
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(201, 168, 76, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      flex-shrink: 0;
+      object-fit: cover;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
     }
     .header h1 {
       font-size: 22px;
@@ -549,12 +564,13 @@
   <!-- Header -->
   <div class="header">
     <div class="header-inner">
-      <div class="header-icon">&#x1F3A8;</div>
+      <img src="assets/app-icon.png" alt="استوديو التحويل" class="header-logo" onerror="this.style.display='none'; document.querySelector('.header-icon-fallback').style.display='flex'">
+      <div class="header-icon-fallback" style="display:none;">&#x1F3A8;</div>
       <div>
         <h1>استوديو التحويل</h1>
         <p>تحويل ورندر تصاميم Antigravity</p>
       </div>
-      <a href="/" class="back-link">← العودة للموقع</a>
+      <a href="#" id="backLink" class="back-link">← العودة للموقع</a>
       <button class="theme-toggle" id="themeToggleBtn" aria-label="Toggle theme">🌙</button>
     </div>
   </div>
@@ -1127,12 +1143,32 @@ function renderTextLayer(ctx, layer, data) {
   ctx.restore();
 }
 
-// ==================== Dark Mode Toggle ====================
+// ==================== Smart Back Button + Dark Mode Toggle ====================
 (function() {
+  // Smart back link — detect platform and set correct URL
+  const backLink = document.getElementById('backLink');
+  if (backLink) {
+    const path = window.location.pathname;
+    const host = window.location.hostname;
+    let backUrl = '/';
+    
+    if (path.startsWith('/studio')) {
+      // Studio is mounted under /studio/ on Cloudflare Pages or Netlify → back to root
+      backUrl = '/';
+    } else if (host.includes('onrender.com')) {
+      // Direct access on Render — go to main site (Cloudflare Pages)
+      backUrl = 'https://newmine-2cb.pages.dev/';
+    } else {
+      // Fallback: history back if there's a previous page, else go to root
+      backUrl = '/';
+    }
+    backLink.href = backUrl;
+  }
+
+  // Dark mode
   const btn = document.getElementById('themeToggleBtn');
   if (!btn) return;
   
-  // Load saved theme
   const saved = localStorage.getItem('studio-theme');
   if (saved === 'dark') {
     document.body.classList.add('dark-mode');
