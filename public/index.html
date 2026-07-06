@@ -11,9 +11,75 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/app-icon.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="assets/app-icon.png" />
   <link rel="apple-touch-icon" sizes="120x120" href="assets/app-icon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="preconnect" href="https://fonts.googleapis.com">
+  <meta name="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- ==================== Social Media Preview (Open Graph + Twitter) ==================== -->
+  <!-- Static defaults; the inline script below rewrites them per-host so the
+       correct og:url / og:image is served on Render, Cloudflare, and Netlify. -->
+  <meta name="description" content="استوديو التحويل - أداة احترافية لتحويل ورندر تصاميم Antigravity إلى صيغة Export Pro بنقرة واحدة. ارفع ملف ZIP أو .andalusi وحوّله فوراً." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="استوديو التصاميم" />
+  <meta property="og:locale" content="ar_AR" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:title" content="استوديو التحويل - أدوات التصاميم" />
+  <meta property="og:description" content="أداة احترافية لتحويل ورندر تصاميم Antigravity إلى صيغة Export Pro بنقرة واحدة. ارفع ملف ZIP أو .andalusi وحوّله فوراً." />
+  <meta property="og:image" content="https://design-converter-app.onrender.com/assets/app-iconlink.jpg" />
+  <meta property="og:image:secure_url" content="https://design-converter-app.onrender.com/assets/app-iconlink.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1024" />
+  <meta property="og:image:height" content="1024" />
+  <meta property="og:image:alt" content="استوديو التحويل - أدوات التصاميم" />
+  <meta property="og:url" content="https://design-converter-app.onrender.com/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="استوديو التحويل - أدوات التصاميم" />
+  <meta name="twitter:description" content="أداة احترافية لتحويل ورندر تصاميم Antigravity إلى صيغة Export Pro بنقرة واحدة." />
+  <meta name="twitter:image" content="https://design-converter-app.onrender.com/assets/app-iconlink.jpg" />
+  <meta name="twitter:image:alt" content="استوديو التحويل" />
+  <link rel="canonical" href="https://design-converter-app.onrender.com/" />
+  <script>
+    // Rewrite OG tags per-host so sharing from any deployment shows correct
+    // canonical URL + image. Most social scrapers (Facebook, WhatsApp, Telegram,
+    // LinkedIn) execute only the static HTML — they do NOT run inline JS — so
+    // these rewrites only affect in-browser previews (e.g. PWA install, browser
+    // tab sharing). For scrapers, the static defaults above already point to
+    // the Render origin which serves the same content + image.
+    (function () {
+      try {
+        var host = location.hostname;
+        var path = location.pathname;
+        var isStudioSubpath = path.indexOf('/studio') === 0;
+        var origin = location.origin;
+        // Pick canonical deployment URL
+        var canonicalUrl;
+        if (host.endsWith('.onrender.com')) {
+          canonicalUrl = origin + '/';
+        } else if (host.endsWith('.pages.dev')) {
+          canonicalUrl = origin + '/studio/';
+        } else if (host.indexOf('netlify') !== -1) {
+          canonicalUrl = origin + '/studio/';
+        } else {
+          canonicalUrl = origin + (isStudioSubpath ? '/studio/' : '/');
+        }
+        // OG image: use same-origin if available, else fall back to Render
+        var ogImage = origin + '/assets/app-iconlink.jpg';
+        if (isStudioSubpath) {
+          ogImage = origin + '/studio/assets/app-iconlink.jpg';
+        }
+        function setMeta(selector, attr, value) {
+          var el = document.querySelector(selector);
+          if (el) el.setAttribute(attr, value);
+        }
+        setMeta('meta[property="og:url"]', 'content', canonicalUrl);
+        setMeta('meta[property="og:image"]', 'content', ogImage);
+        setMeta('meta[property="og:image:secure_url"]', 'content', ogImage);
+        setMeta('meta[name="twitter:image"]', 'content', ogImage);
+        var link = document.querySelector('link[rel="canonical"]');
+        if (link) link.setAttribute('href', canonicalUrl);
+      } catch (e) {}
+    })();
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
