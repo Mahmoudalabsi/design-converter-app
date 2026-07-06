@@ -30,6 +30,36 @@ const SESSIONS_DIR = path.join(os.tmpdir(), 'render_sessions');
 
 // ==================== Convert API ====================
 
+// Errors that represent user input problems (not server crashes).
+// These should return 400 instead of 500.
+const USER_INPUT_ERROR_PATTERNS = [
+  /data\.json not found/i,
+  /لم يتم العثور على ملف/i,
+  /ملف ZIP/i,
+  /JSON/i,
+  /Unexpected token/i,
+  /Expected property name/i,
+  /is not iterable/i,
+  /Cannot read properties of undefined/i,
+  /size/i,
+  /layers/i,
+];
+
+function isUserInputError(err) {
+  if (!err || !err.message) return false;
+  return USER_INPUT_ERROR_PATTERNS.some(re => re.test(err.message));
+}
+
+// Sanitize template name for use in HTTP headers.
+// Express/Node rejects non-ASCII (including Arabic) in header values.
+function sanitizeNameForHeader(name) {
+  if (!name) return 'design';
+  // Replace any non-ASCII or unsafe char with underscore, keep ASCII alphanumerics + . - _
+  const safe = String(name).replace(/[^a-zA-Z0-9._-]/g, '_');
+  // Collapse multiple underscores
+  return safe.replace(/_+/g, '_').replace(/^_|_$/g, '') || 'design';
+}
+
 app.post('/api/convert', upload.single('file'), async (req, res) => {
   const tempDir = path.join(os.tmpdir(), 'design-convert-' + Date.now());
   const extractDir = path.join(tempDir, 'input');
@@ -67,10 +97,19 @@ app.post('/api/convert', upload.single('file'), async (req, res) => {
 
     try { fs.rmSync(tempDir, { recursive: true, force: true }); } catch (e) {}
 
+    // Build safe filenames for headers (Arabic/non-ASCII chars would crash Express).
+    // The actual template name (with Arabic preserved) is sent via X-Template-Name,
+    // and the file inside the ZIP keeps its real name.
+    const safeTemplateHeader = sanitizeNameForHeader(result.templateName);
+    // X-Template-Name must also be ASCII-safe; the original Arabic name is
+    // preserved inside the output ZIP's json/<name>.json file (in the "name" field)
+    // and in the skins/<name>/ folder, but the HTTP header itself rejects non-ASCII.
+    const safeTemplateNameHeader = sanitizeNameForHeader(result.templateName);
     res.set({
       'Content-Type': 'application/zip',
-      'Content-Disposition': 'attachment; filename="' + result.templateName + '.zip"',
-      'X-Template-Name': result.templateName,
+      'Content-Disposition': "attachment; filename=\"" + safeTemplateHeader + '.zip"; filename*=UTF-8\'\'' + encodeURIComponent(result.templateName + '.zip'),
+      'X-Template-Name': safeTemplateNameHeader,
+      'X-Template-Name-Original': encodeURIComponent(result.templateName),
       'X-Layers-Count': String(result.layersCount),
       'X-Warnings': JSON.stringify(result.warnings),
     });
@@ -78,7 +117,22 @@ app.post('/api/convert', upload.single('file'), async (req, res) => {
   } catch (error) {
     console.error('Conversion error:', error);
     try { fs.rmSync(tempDir, { recursive: true, force: true }); } catch (e) {}
-    res.status(500).json({ error: error.message || 'حدث خطأ أثناء التحويل' });
+    // User-input problems get 400, real server crashes get 500.
+    const status = isUserInputError(error) ? 400 : 500;
+    let userMsg = error.message || 'حدث خطأ أثناء التحويل';
+    // Translate common Node/JSON parse errors to clear Arabic.
+    if (/data\.json not found/i.test(userMsg)) {
+      userMsg = 'لم يتم العثور على data.json داخل ملف ZIP — تأكد من رفع ملف تصميم صحيح';
+    } else if (/Unexpected token|Expected property name|JSON/i.test(userMsg)) {
+      userMsg = 'ملف data.json غير صالح: تأكد من صياغة JSON';
+    } else if (/is not iterable/i.test(userMsg) && /layers/i.test(userMsg)) {
+      userMsg = 'ملف data.json غير مكتمل: يجب أن يحتوي على size.size و layers كمصفوفة';
+    } else if (/Cannot read properties of undefined \(reading 'size'\)/i.test(userMsg)) {
+      userMsg = 'ملف data.json غير مكتمل: يجب أن يحتوي على size.size كزوج إحداثيات';
+    } else if (/is not iterable/i.test(userMsg)) {
+      userMsg = 'ملف data.json غير مكتمل: يجب أن يحتوي على layers كمصفوفة';
+    }
+    res.status(status).json({ error: userMsg });
   }
 });
 

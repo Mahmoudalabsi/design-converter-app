@@ -914,7 +914,16 @@ async function startConvert() {
       throw new Error(errorMsg);
     }
 
-    const templateName = response.headers.get('X-Template-Name') || 'Exported_Design';
+    // X-Template-Name is ASCII-sanitized for HTTP transport.
+    // X-Template-Name-Original carries the URL-encoded real name (may contain Arabic).
+    const originalEncoded = response.headers.get('X-Template-Name-Original');
+    let templateName = 'Exported_Design';
+    if (originalEncoded) {
+      try { templateName = decodeURIComponent(originalEncoded); }
+      catch (e) { templateName = response.headers.get('X-Template-Name') || templateName; }
+    } else {
+      templateName = response.headers.get('X-Template-Name') || templateName;
+    }
     const layersCount = response.headers.get('X-Layers-Count') || '0';
     let warnings = [];
     try { warnings = JSON.parse(response.headers.get('X-Warnings') || '[]'); } catch(e) {}
@@ -935,24 +944,28 @@ async function startConvert() {
       warningsHTML += '</div>';
     }
 
+    // Escape template name for safe insertion into HTML/JS-string contexts
+    const tplNameEsc = templateName.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const tplNameDisplay = templateName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
     resultDiv.innerHTML =
       '<div class="result-box">' +
         '<div class="result-icon">&#x2705;</div>' +
-        '<div class="result-name">' + templateName + '</div>' +
+        '<div class="result-name">' + tplNameDisplay + '</div>' +
         '<div class="result-badge">' + layersCount + ' طبقة</div>' +
       '</div>' +
       warningsHTML +
       '<div class="file-tree">' +
-        '<div class="dir">&#x1F4C1; ' + templateName + '.zip</div>' +
-        '<div>&nbsp;&nbsp;&#x1F4C4; json/' + templateName + '.json</div>' +
-        '<div>&nbsp;&nbsp;&#x1F4C1; skins/' + templateName + '/</div>' +
+        '<div class="dir">&#x1F4C1; ' + tplNameDisplay + '.zip</div>' +
+        '<div>&nbsp;&nbsp;&#x1F4C4; json/' + tplNameDisplay + '.json</div>' +
+        '<div>&nbsp;&nbsp;&#x1F4C1; skins/' + tplNameDisplay + '/</div>' +
         '<div>&nbsp;&nbsp;&nbsp;&nbsp;baseBackground.png</div>' +
         '<div>&nbsp;&nbsp;&nbsp;&nbsp;backgroundImage.png</div>' +
         '<div>&nbsp;&nbsp;&nbsp;&nbsp;... (صور الطبقات)</div>' +
         '<div>&nbsp;&nbsp;&#x1F4C1; fonts/</div>' +
         '<div>&nbsp;&nbsp;&nbsp;&nbsp;... (TTF, OTF, WOFF)</div>' +
       '</div>' +
-      '<button class="btn btn-green" onclick="downloadFile(\'' + downloadUrl + '\', \'' + templateName + '.zip\')">' +
+      '<button class="btn btn-green" onclick="downloadFile(\'' + downloadUrl + '\', \'' + tplNameEsc + '.zip\')">' +
         '&#x1F4E5; تنزيل الملف المضغوط' +
       '</button>' +
       '<button class="btn btn-outline" style="margin-top:8px" onclick="renderConverted()">' +
