@@ -19,6 +19,44 @@ process.on('unhandledRejection', (reason) => {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ==================== CORS ====================
+// The studio is served from multiple origins (Render direct, Cloudflare Pages,
+// Netlify). Allow cross-origin API calls so the proxied HTML pages can POST to
+// this Render origin directly.
+const ALLOWED_ORIGINS = new Set([
+  'https://design-converter-app.onrender.com',
+  'https://designstudio-7hh.pages.dev',
+  'https://designstudio-app.netlify.app',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+]);
+const EXPOSE_HEADERS = [
+  'X-Template-Name',
+  'X-Template-Name-Original',
+  'X-Layers-Count',
+  'X-Warnings',
+  'Content-Disposition',
+].join(', ');
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  } else {
+    // Allow same-origin or unknown origins (e.g. local dev, custom proxies)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Template-Name, X-Template-Name-Original, X-Layers-Count, X-Warnings');
+  res.setHeader('Access-Control-Expose-Headers', EXPOSE_HEADERS);
+  res.setHeader('Access-Control-Max-Age', '86400');
+  // Preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  next();
+});
+
 // Multer setup - store in memory
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 

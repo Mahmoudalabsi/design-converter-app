@@ -790,6 +790,27 @@
   </div>
 
 <script>
+// ==================== API Base Resolver ====================
+// When the studio is served from a proxy (Cloudflare Pages / Netlify), the
+// relative /api/* path hits the proxy host, which doesn't forward POSTs to
+// Render. Detect that case and rewrite API calls to the Render origin
+// directly. Also accepts ?api=<url> or window.__API_BASE__ override.
+const RENDER_ORIGIN = 'https://design-converter-app.onrender.com';
+function resolveApiBase() {
+  if (window.__API_BASE__) return window.__API_BASE__.replace(/\/+$/, '');
+  const q = new URL(location.href).searchParams.get('api');
+  if (q) return q.replace(/\/+$/, '');
+  // Same origin as Render -> use relative
+  if (location.hostname === 'design-converter-app.onrender.com' ||
+      location.hostname.endsWith('.onrender.com')) {
+    return '';
+  }
+  // Proxy origin (Cloudflare Pages, Netlify, etc.) -> use absolute Render URL
+  return RENDER_ORIGIN;
+}
+const API_BASE = resolveApiBase();
+function apiUrl(path) { return API_BASE + path; }
+
 // ==================== State ====================
 let convertFile = null;
 let renderFile = null;
@@ -892,7 +913,7 @@ async function startConvert() {
 
     progressFill.style.width = '40%';
 
-    const response = await fetch('/api/convert', {
+    const response = await fetch(apiUrl('/api/convert'), {
       method: 'POST',
       body: formData,
     });
@@ -909,6 +930,10 @@ async function startConvert() {
         } else {
           const text = await response.text();
           if (text && text.length < 500) errorMsg = text;
+          // HTML 404/405 from proxy (Netlify/Cloudflare) -> clear message
+          if (response.status === 404 || response.status === 405) {
+            errorMsg = 'تعذّر الوصول إلى خادم التحويل (رمز ' + response.status + '). يتم الآن إعادة التوجيه تلقائيًا إلى خادم Render المباشر — يُرجى إعادة المحاولة.';
+          }
         }
       } catch (e) {}
       throw new Error(errorMsg);
@@ -1027,7 +1052,7 @@ async function startRender() {
 
     progressFill.style.width = '30%';
 
-    const response = await fetch('/api/render', {
+    const response = await fetch(apiUrl('/api/render'), {
       method: 'POST',
       body: formData,
     });
@@ -1080,7 +1105,7 @@ async function startRender() {
     // Draw images
     if (data.imageLayers) {
       for (const layer of data.imageLayers) {
-        const imageUrl = '/api/render-image/' + data.sessionId + '/' + layer.imageFile;
+        const imageUrl = apiUrl('/api/render-image/' + data.sessionId + '/' + layer.imageFile);
         try {
           await new Promise((resolve) => {
             const img = new Image();
