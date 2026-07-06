@@ -800,8 +800,18 @@ async function startConvert() {
     progressFill.style.width = '70%';
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'فشل التحويل');
+      let errorMsg = 'فشل التحويل (رمز ' + response.status + ')';
+      try {
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const errorData = await response.json();
+          if (errorData && errorData.error) errorMsg = errorData.error;
+        } else {
+          const text = await response.text();
+          if (text && text.length < 500) errorMsg = text;
+        }
+      } catch (e) {}
+      throw new Error(errorMsg);
     }
 
     const templateName = response.headers.get('X-Template-Name') || 'Exported_Design';
@@ -850,10 +860,14 @@ async function startConvert() {
       '</button>';
 
   } catch (error) {
+    let msg = error.message || 'فشل التحويل';
+    if (error.name === 'TypeError' || /Failed to fetch|NetworkError|networkerror/i.test(msg)) {
+      msg = 'تعذّر الاتصال بالخادم. قد يكون الخادم نائماً — يرجى إعادة المحاولة بعد بضع ثوانٍ.';
+    }
     resultDiv.innerHTML =
       '<div class="error-box">' +
         '<div class="icon">&#x274C;</div>' +
-        '<div class="msg">' + error.message + '</div>' +
+        '<div class="msg">' + msg + '</div>' +
       '</div>';
   } finally {
     btn.disabled = false;
@@ -908,8 +922,18 @@ async function startRender() {
     progressFill.style.width = '50%';
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'فشل الرندر');
+      let errorMsg = 'فشل الرندر (رمز ' + response.status + ')';
+      try {
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const errorData = await response.json();
+          if (errorData && errorData.error) errorMsg = errorData.error;
+        } else {
+          const text = await response.text();
+          if (text && text.length < 500) errorMsg = text;
+        }
+      } catch (e) {}
+      throw new Error(errorMsg);
     }
 
     const data = await response.json();
@@ -1029,10 +1053,14 @@ async function startRender() {
       '</button>';
 
   } catch (error) {
+    let msg = error.message || 'فشل الرندر';
+    if (error.name === 'TypeError' || /Failed to fetch|NetworkError|networkerror/i.test(msg)) {
+      msg = 'تعذّر الاتصال بالخادم. قد يكون الخادم نائماً — يرجى إعادة المحاولة بعد بضع ثوانٍ.';
+    }
     resultDiv.innerHTML =
       '<div class="error-box">' +
         '<div class="icon">&#x274C;</div>' +
-        '<div class="msg">' + error.message + '</div>' +
+        '<div class="msg">' + msg + '</div>' +
       '</div>';
   } finally {
     btn.disabled = false;
