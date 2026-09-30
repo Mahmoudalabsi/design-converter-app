@@ -151,7 +151,9 @@
   // إضافة زر تسجيل الخروج إلى الرأس
   function injectLogoutButton() {
     if (!hasLocalSession()) return;
-    var header = document.querySelector('header .header-inner');
+    // يدعم كلا البنيتين: <header><div class="header-inner"> (صفحات الموقع)
+    // و <div class="header"><div class="header-inner"> (استوديو التحويل)
+    var header = document.querySelector('header .header-inner, .header .header-inner');
     if (!header) return;
     if (document.querySelector('.auth-logout-btn')) return;
 
