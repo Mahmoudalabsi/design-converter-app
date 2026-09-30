@@ -9,7 +9,7 @@
  *
  *  يعمل النظام تلقائياً عبر جميع النطاقات:
  *    - designstudio-app.netlify.app  (نفس الأصل، طلبات نسبية)
- *    - designstudio-7hh.pages.dev    (طلبات cross-origin إلى Netlify)
+ *    - designstudio-app.pages.dev    (طلبات cross-origin إلى Netlify)
  *    - design-converter-app.onrender.com (طلبات cross-origin إلى Netlify)
  *
  *  لتغيير كلمة المرور:
@@ -36,6 +36,11 @@ window.AUTH_CONFIG = (function () {
   // على أي نطاق آخر (Cloudflare Pages, Render studio, مخصص)، استخدم روابط مطلقة.
   var base = isNetlify ? '' : NETLIFY_ORIGIN;
 
+  // ⚠️ صفحة تسجيل الدخول يجب أن تكون محلية دائماً (نفس الأصل) لأن
+  // localStorage محصور لكل نطاق: إذا تم تسجيل الدخول على نطاق Netlify
+  // وتُخزّنت الجلسة هناك، فلن يراها نطاق Cloudflare/Render إطلاقاً
+  // ← مما يسبب حلقة تحويل لا نهائية بين النطاقات.
+  // الدالة نفسها (login/verify) تعمل عابرة للنطاقات بفضل CORS.
   return {
     // ✅ تفعيل المصادقة
     enabled: true,
@@ -44,8 +49,8 @@ window.AUTH_CONFIG = (function () {
     loginEndpoint: base + '/.netlify/functions/login',
     verifyEndpoint: base + '/.netlify/functions/verify',
 
-    // صفحة تسجيل الدخول (على Netlify)
-    loginPage: base + '/login.html',
+    // صفحة تسجيل الدخول (محلية على كل نطاق — إلزامي)
+    loginPage: '/login.html',
 
     // مدة الجلسة بالمللي ثانية (24 ساعة) - مطابقة لإعداد الخادم
     sessionDuration: 24 * 60 * 60 * 1000,

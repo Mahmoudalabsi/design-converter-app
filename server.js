@@ -25,6 +25,7 @@ const PORT = process.env.PORT || 3000;
 // this Render origin directly.
 const ALLOWED_ORIGINS = new Set([
   'https://design-converter-app.onrender.com',
+  'https://designstudio-app.pages.dev',
   'https://designstudio-7hh.pages.dev',
   'https://designstudio-app.netlify.app',
   'http://localhost:3000',

@@ -38,7 +38,16 @@
   // التحقق من كون الصفحة عامة
   function isPublicPage() {
     var page = currentPage();
-    return CFG.publicPages.indexOf(page) !== -1;
+    // تطبيع الاسم: إزالة الامتداد للمقارنة (Cloudflare Pages يعيد توجيه
+    // /login.html إلى /login بدون امتداد — يجب اعتبار الاثنين متكافئين)
+    var normalized = page.replace(/\.[^.]*$/, '');
+    for (var i = 0; i < CFG.publicPages.length; i++) {
+      var p = CFG.publicPages[i];
+      if (p === page || p.replace(/\.[^.]*$/, '') === normalized) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // التحقق من وجود جلسة محلية صالحة (تحقق سريع دون اتصال بالخادم)

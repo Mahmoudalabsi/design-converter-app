@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تسجيل الدخول - استوديو التصاميم</title>
+
+    <link rel="icon" type="image/png" href="assets/app-icon.png" />
+    <meta name="theme-color" content="#c9a84c" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="assets/aos.css" />
+
+    <style>
+      /* ── تنسيق صفحة تسجيل الدخول ── */
+      body {
+        background: linear-gradient(135deg, #fffdf8 0%, #f9eed5 50%, #f5e6c8 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* تأثير التوهج في الخلفية */
+      body::before {
+        content: '';
+        position: fixed;
+        top: -200px;
+        right: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(201, 168, 76, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+      }
+      body::after {
+        content: '';
+        position: fixed;
+        bottom: -200px;
+        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(168, 124, 32, 0.12) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .login-container {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 440px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        box-shadow:
+          0 20px 60px rgba(168, 124, 32, 0.15),
+          0 4px 12px rgba(0, 0, 0, 0.05);
+        animation: fadeUp 0.6s ease-out;
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .login-logo {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+      }
+      .login-logo img {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(168, 124, 32, 0.25);
+      }
+
+      .login-title {
+        text-align: center;
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.01em;
+      }
+      .login-title .gold {
+        background: linear-gradient(135deg, #c9a84c 20%, #a87c20 50%, #c9a84c 80%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: #c9a84c;
+      }
+
+      .login-subtitle {
+        text-align: center;
+        color: #6b6b6b;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 0.5rem;
+      }
+      .input-wrapper {
+        position: relative;
+      }
+      .form-input {
+        width: 100%;
+        padding: 0.875rem 3rem 0.875rem 1rem;
+        font-size: 1rem;
+        font-family: 'Cairo', sans-serif;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1.5px solid rgba(201, 168, 76, 0.3);
+        border-radius: 12px;
+        color: #1a1a1a;
+        transition: all 0.2s ease;
+        outline: none;
+      }
+      .form-input:focus {
+        border-color: #c9a84c;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.12);
+      }
+      .form-input.is-error {
+        border-color: #e53935;
+        background: rgba(229, 57, 53, 0.04);
+      }
+
+      .toggle-password {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #999;
+        padding: 0.25rem;
+        font-size: 1.1rem;
+        transition: color 0.2s;
+      }
+      .toggle-password:hover { color: #c9a84c; }
+
+      .login-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
+        color: #fff;
+        background: linear-gradient(135deg, #c9a84c, #a87c20);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 6px 16px rgba(168, 124, 32, 0.3);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(168, 124, 32, 0.4);
+      }
+      .login-btn:active { transform: translateY(0); }
+      .login-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .login-btn .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .error-message {
+        background: rgba(229, 57, 53, 0.08);
+        border: 1px solid rgba(229, 57, 53, 0.25);
+        color: #c62828;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        display: none;
+        animation: shake 0.4s ease;
+      }
+      .error-message.show { display: block; }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-6px); }
+        75% { transform: translateX(6px); }
+      }
+
+      .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.825rem;
+        color: #999;
+      }
+      .login-footer a {
+        color: #c9a84c;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .login-footer a:hover { text-decoration: underline; }
+
+      /* منع الوصول لصفحة الدخول إذا كان مسجلاً */
+      .already-auth {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(76, 175, 80, 0.08);
+        border: 1px solid rgba(76, 175, 80, 0.25);
+        border-radius: 10px;
+        color: #2e7d32;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        display: none;
+      }
+      .already-auth.show { display: block; }
+    </style>
+  </head>
+  <body>
+    <main class="login-container" data-aos="zoom-in" data-aos-duration="600">
+      <div class="login-logo">
+        <img src="assets/app-icon.png" alt="استوديو التصاميم" />
+      </div>
+
+      <h1 class="login-title">
+        مرحباً بك في <span class="gold">استوديو التصاميم</span>
+      </h1>
+      <p class="login-subtitle">
+        هذا الموقع محمي بكلمة مرور. الرجاء إدخال كلمة المرور للمتابعة.
+      </p>
+
+      <div class="already-auth" id="alreadyAuth">
+        ✅ أنت مسجل الدخول بالفعل. جاري التحويل...
+      </div>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="error-message" id="errorMessage">
+          ❌ كلمة المرور غير صحيحة. حاول مرة أخرى.
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">كلمة المرور</label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-input"
+              placeholder="أدخل كلمة المرور"
+              autocomplete="current-password"
+              required
+              autofocus
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              id="togglePassword"
+              aria-label="إظهار/إخفاء كلمة المرور"
+            >
+              👁
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <span class="btn-text">دخول</span>
+        </button>
+      </form>
+
+      <div class="login-footer">
+        © 2024 استوديو التصاميم — جميع الحقوق محفوظة
+      </div>
+    </main>
+
+    <!-- سكربتات المصادقة -->
+    <script src="auth-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="assets/aos.js"></script>
+
+    <script>
+      'use strict';
+
+      // إذا كان المستخدم مسجلاً بالفعل، توجيهه للصفحة الرئيسية
+      (function checkAlreadyAuth() {
+        if (window.isAuthenticated && window.isAuthenticated()) {
+          document.getElementById('alreadyAuth').classList.add('show');
+          document.getElementById('loginForm').style.display = 'none';
+          // الحصول على رابط إعادة التوجيه إن وجد
+          var params = new URLSearchParams(window.location.search);
+          var redirect = params.get('redirect');
+          setTimeout(function () {
+            window.location.href = redirect || 'index.html';
+          }, 1200);
+        }
+      })();
+
+      document.addEventListener('DOMContentLoaded', function () {
+        if (typeof AOS !== 'undefined') AOS.init({ once: true, duration: 600 });
+
+        var form = document.getElementById('loginForm');
+        var passwordInput = document.getElementById('password');
+        var loginBtn = document.getElementById('loginBtn');
+        var errorMessage = document.getElementById('errorMessage');
+        var toggleBtn = document.getElementById('togglePassword');
+
+        // إظهار/إخفاء كلمة المرور
+        toggleBtn.addEventListener('click', function () {
+          var isPassword = passwordInput.type === 'password';
+          passwordInput.type = isPassword ? 'text' : 'password';
+          toggleBtn.textContent = isPassword ? '🙈' : '👁';
+        });
+
+        // معالجة إرسال النموذج
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var password = passwordInput.value;
+
+          if (!password) {
+            showError('الرجاء إدخال كلمة المرور');
+            return;
+          }
+
+          // تعطيل الزر وإظهار مؤشر التحميل
+          loginBtn.disabled = true;
+          loginBtn.innerHTML = '<span class="spinner"></span> جاري التحقق...';
+          hideError();
+
+          try {
+            var result = await window.loginUser(password);
+
+            if (result.success) {
+              loginBtn.innerHTML = '✅ تم الدخول بنجاح';
+              loginBtn.style.background = 'linear-gradient(135deg, #4caf50, #2e7d32)';
+
+              // إعادة التوجيه
+              var params = new URLSearchParams(window.location.search);
+              var redirect = params.get('redirect');
+              setTimeout(function () {
+                window.location.href = redirect || 'index.html';
+              }, 700);
+            } else {
+              showError('❌ ' + (result.error || 'كلمة المرور غير صحيحة. حاول مرة أخرى.'));
+              passwordInput.value = '';
+              passwordInput.classList.add('is-error');
+              passwordInput.focus();
+              loginBtn.disabled = false;
+              loginBtn.innerHTML = '<span class="btn-text">دخول</span>';
+            }
+          } catch (err) {
+            console.error('Login error:', err);
+            showError('حدث خطأ أثناء التحقق. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<span class="btn-text">دخول</span>';
+          }
+        });
+
+        // إزالة حالة الخطأ عند الكتابة
+        passwordInput.addEventListener('input', function () {
+          passwordInput.classList.remove('is-error');
+          hideError();
+        });
+
+        function showError(msg) {
+          errorMessage.textContent = msg;
+          errorMessage.classList.add('show');
+        }
+        function hideError() {
+          errorMessage.classList.remove('show');
+        }
+      });
+    </script>
+  </body>
+</html>
