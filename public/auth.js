@@ -4,7 +4,11 @@
  * ───────────────────────────────────────────────────────────
  *  يستخدم Netlify Functions للتحقق من كلمة المرور بشكل آمن.
  *  كلمة المرور لا تُخزَّن في المتصفح إطلاقاً.
- * ───────────────────────────────────────────────────────────
+ *
+ *  ⭐ الجلسة تُخزَّن في sessionStorage (وليست localStorage):
+ *     - تُمحى تلقائياً عند إغلاق التبويب أو المتصفح
+ *     - عند إعادة الفتح، يُطلب تسجيل الدخول من جديد
+ *  ───────────────────────────────────────────────────────────
  */
 (function () {
   'use strict';
@@ -23,11 +27,19 @@
     console.warn('[Auth] المصادقة معطّلة مؤقتاً (enabled: false في auth-config.js). لإعادة التفعيل: ضع enabled: true.');
     // نظل نسجّل الدوال العامة كـ no-op حتى لا تنكسر صفحة login.html
     window.loginUser = async function () { return { success: true }; };
-    window.logoutUser = function () { localStorage.removeItem(CFG.storageKey); };
+    window.logoutUser = function () { sessionStorage.removeItem(CFG.storageKey); };
     window.isAuthenticated = function () { return true; };
     window.isAuthenticatedAsync = async function () { return true; };
     return; // لا حماية، لا زر خروج، لا redirect
   }
+
+  // تنظيف مرة واحدة: إزالة أي جلسة قديمة في localStorage من الإصدارات السابقة
+  // (هجّينا التخزين من localStorage إلى sessionStorage، فالقديم لم يعد يُستخدم)
+  try {
+    if (localStorage.getItem(CFG.storageKey)) {
+      localStorage.removeItem(CFG.storageKey);
+    }
+  } catch (e) { /* تجاهل */ }
 
   // الحصول على اسم الصفحة الحالية
   function currentPage() {
@@ -53,17 +65,17 @@
   // التحقق من وجود جلسة محلية صالحة (تحقق سريع دون اتصال بالخادم)
   function hasLocalSession() {
     try {
-      var raw = localStorage.getItem(CFG.storageKey);
+      var raw = sessionStorage.getItem(CFG.storageKey);
       if (!raw) return false;
       var session = JSON.parse(raw);
       // التحقق من انتهاء الصلاحية
       if (!session.expiresAt || Date.now() > session.expiresAt) {
-        localStorage.removeItem(CFG.storageKey);
+        sessionStorage.removeItem(CFG.storageKey);
         return false;
       }
       // التحقق من وجود التوكن
       if (!session.token) {
-        localStorage.removeItem(CFG.storageKey);
+        sessionStorage.removeItem(CFG.storageKey);
         return false;
       }
       return true;
@@ -75,7 +87,7 @@
   // التحقق من الجلسة عبر الخادم (للأمان العالي - اختياري)
   async function verifySessionWithServer() {
     try {
-      var raw = localStorage.getItem(CFG.storageKey);
+      var raw = sessionStorage.getItem(CFG.storageKey);
       if (!raw) return false;
       var session = JSON.parse(raw);
       var response = await fetch(CFG.verifyEndpoint, {
@@ -86,7 +98,7 @@
         }
       });
       if (!response.ok) {
-        localStorage.removeItem(CFG.storageKey);
+        sessionStorage.removeItem(CFG.storageKey);
         return false;
       }
       var data = await response.json();
@@ -114,7 +126,7 @@
           createdAt: Date.now(),
           expiresAt: data.expiresAt
         };
-        localStorage.setItem(CFG.storageKey, JSON.stringify(session));
+        sessionStorage.setItem(CFG.storageKey, JSON.stringify(session));
         return { success: true };
       } else {
         return {
@@ -133,7 +145,7 @@
 
   // تسجيل الخروج
   window.logoutUser = function () {
-    localStorage.removeItem(CFG.storageKey);
+    sessionStorage.removeItem(CFG.storageKey);
     window.location.href = CFG.loginPage;
   };
 
