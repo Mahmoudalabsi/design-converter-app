@@ -1415,5 +1415,12 @@ function renderTextLayer(ctx, layer, data) {
 })();
 </script>
 
+<!-- ==================== Auth (login protection) ==================== -->
+<!-- auth-config.js sets window.AUTH_CONFIG with dynamic absolute URLs so
+     cross-origin API calls hit Netlify Functions regardless of which host
+     serves this page (Render direct, Cloudflare proxy, Netlify proxy). -->
+<script src="auth-config.js"></script>
+<script src="auth.js"></script>
+
 </body>
 </html>
